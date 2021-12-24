@@ -5,9 +5,21 @@ import { Ionicons } from "@expo/vector-icons";
 import * as Font from "expo-font";
 import { Asset } from "expo-asset";
 import { StyleSheet, Text, View } from "react-native";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import TabIcon from "./components/nav/TabIcon";
+import { NavigationContainer } from "@react-navigation/native";
+import Home from "./screens/Home";
+import Profile from "./screens/Profile";
+import Search from "./screens/Search";
+import { ApolloProvider, useReactiveVar } from "@apollo/client";
+import client, { isLoggedInVar } from "./apollo";
+import LogIn from "./screens/LogIn";
+
+const Tabs = createBottomTabNavigator();
 
 export default function App() {
   const [loading, setLoading] = useState(true);
+  const isLoggedIn = useReactiveVar(isLoggedInVar);
   const onFinish = () => setLoading(false);
   const preload = () => {
     const fontToLoad = [Ionicons.font];
@@ -29,10 +41,50 @@ export default function App() {
   }
 
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <ApolloProvider client={client}>
+      <NavigationContainer>
+        <Tabs.Navigator
+          screenOptions={{
+            tabBarStyle: {
+              backgroundColor: "black",
+              borderTopColor: "rgba(255, 255, 255, 0.3)",
+            },
+            tabBarActiveTintColor: "white",
+            headerShown: false,
+            tabBarShowLabel: false,
+          }}
+        >
+          <Tabs.Screen
+            name="Home"
+            component={Home}
+            options={{
+              tabBarIcon: ({ focused, color, size }) => (
+                <TabIcon iconName={"home"} color={color} focused={focused} />
+              ),
+            }}
+          />
+          <Tabs.Screen
+            name="Search"
+            component={Search}
+            options={{
+              tabBarIcon: ({ focused, color, size }) => (
+                <TabIcon iconName={"search"} color={color} focused={focused} />
+              ),
+            }}
+          />
+
+          <Tabs.Screen
+            name="Profile"
+            component={isLoggedIn ? Profile : LogIn}
+            options={{
+              tabBarIcon: ({ focused, color, size }) => (
+                <TabIcon iconName={"person"} color={color} focused={focused} />
+              ),
+            }}
+          />
+        </Tabs.Navigator>
+      </NavigationContainer>
+    </ApolloProvider>
   );
 }
 
