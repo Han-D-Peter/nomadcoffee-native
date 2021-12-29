@@ -4,8 +4,11 @@ import styled from "styled-components/native";
 import { Text, useWindowDimensions } from "react-native";
 
 const Container = styled.View`
-  margin-top: 20px;
-  margin-bottom: 20px;
+  padding: 8px;
+  border: 1px solid white;
+  border-radius: 10px;
+  margin-top: 5px;
+  margin-bottom: 5px;
 `;
 const Header = styled.View`
   flex: 1;
