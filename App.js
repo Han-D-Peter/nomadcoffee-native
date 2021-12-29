@@ -12,8 +12,11 @@ import Home from "./screens/Home";
 import Profile from "./screens/Profile";
 import Search from "./screens/Search";
 import { ApolloProvider, useReactiveVar } from "@apollo/client";
-import client, { isLoggedInVar } from "./apollo";
+import client, { isLoggedInVar, tokenVar } from "./apollo";
 import LogIn from "./screens/LogIn";
+import { AsyncStorageWrapper, persistCache } from "apollo3-cache-persist";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { cache } from "./apollo";
 
 const Tabs = createBottomTabNavigator();
 
@@ -21,13 +24,25 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const isLoggedIn = useReactiveVar(isLoggedInVar);
   const onFinish = () => setLoading(false);
-  const preload = () => {
+  const preloadAssets = () => {
     const fontToLoad = [Ionicons.font];
     const fontPromises = fontToLoad.map(font => Font.loadAsync(font));
     const imagesToLoad = [require("./assets/logo.png")];
     const imagePromises = imagesToLoad.map(image => Asset.loadAsync(image));
 
     return Promise.all([...fontPromises, ...imagePromises]);
+  };
+  const preload = async () => {
+    const token = await AsyncStorage.getItem("token");
+    if (token) {
+      isLoggedInVar(true);
+      tokenVar(token);
+    }
+    await persistCache({
+      cache,
+      storage: new AsyncStorageWrapper(AsyncStorage),
+    });
+    return preloadAssets();
   };
 
   if (loading) {
