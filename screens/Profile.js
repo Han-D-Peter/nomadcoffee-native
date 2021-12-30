@@ -1,8 +1,9 @@
 import { gql, useQuery, useReactiveVar } from "@apollo/client";
 import React from "react";
-import { View, Text } from "react-native";
+import { View, Text, TouchableOpacity, Image } from "react-native";
 import { ActivityIndicator } from "react-native-web";
 import { myNameVar } from "../apollo";
+import { logUserOut } from "../apollo";
 
 const PROFILE_QUERY = gql`
   query seeProfile($username: String!) {
@@ -24,23 +25,34 @@ export default function Profile() {
       username: myName,
     },
   });
-  const getQueryValue = data["seeProfile"];
+  const getQueryData = data["seeProfile"];
 
   return (
     <>
       {loading ? null : (
-        <View
-          style={{
-            backgroundColor: "black",
-            flex: 1,
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Text style={{ color: "white" }}>{getQueryValue.email}</Text>
-          <Text style={{ color: "white" }}>{getQueryValue.name}</Text>
-          <Text style={{ color: "white" }}>{getQueryValue.location}</Text>
-        </View>
+        <>
+          <View
+            style={{
+              backgroundColor: "black",
+              flex: 1,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Image
+              resizeMode="cover"
+              source={{ uri: getQueryData.avatarURL }}
+            />
+            <Text style={{ color: "white" }}>{getQueryData.username}</Text>
+            <Text style={{ color: "white" }}>{getQueryData.email}</Text>
+            <Text style={{ color: "white" }}>{getQueryData.name}</Text>
+          </View>
+          <TouchableOpacity onPress={logUserOut}>
+            <View>
+              <Text>log out</Text>
+            </View>
+          </TouchableOpacity>
+        </>
       )}
     </>
   );

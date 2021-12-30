@@ -64,8 +64,13 @@ export default function App() {
               backgroundColor: "black",
               borderTopColor: "rgba(255, 255, 255, 0.3)",
             },
+            headerStyle: {
+              shadowColor: "rgba(255, 255, 255, 0.3)",
+              backgroundColor: "black",
+            },
+            headerTintColor: "white",
             tabBarActiveTintColor: "white",
-            headerShown: false,
+            headerShown: true,
             tabBarShowLabel: false,
           }}
         >

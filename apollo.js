@@ -29,6 +29,7 @@ export const logUserOut = async () => {
   await AsyncStorage.removeItem(TOKEN);
   isLoggedInVar(false);
   tokenVar(null);
+  myNameVar(null);
 };
 
 const httpLink = createHttpLink({
