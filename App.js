@@ -17,12 +17,14 @@ import LogIn from "./screens/LogIn";
 import { AsyncStorageWrapper, persistCache } from "apollo3-cache-persist";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { cache } from "./apollo";
+import { createStackNavigator } from "@react-navigation/stack";
+import TabsNav from "./navigators/TabsNav";
+import CreateShop from "./screens/CreateShop";
 
-const Tabs = createBottomTabNavigator();
+const Stack = createStackNavigator();
 
 export default function App() {
   const [loading, setLoading] = useState(true);
-  const isLoggedIn = useReactiveVar(isLoggedInVar);
   const onFinish = () => setLoading(false);
   const preloadAssets = () => {
     const fontToLoad = [Ionicons.font];
@@ -41,6 +43,7 @@ export default function App() {
     await persistCache({
       cache,
       storage: new AsyncStorageWrapper(AsyncStorage),
+      serialize: false,
     });
     return preloadAssets();
   };
@@ -58,51 +61,28 @@ export default function App() {
   return (
     <ApolloProvider client={client}>
       <NavigationContainer>
-        <Tabs.Navigator
-          screenOptions={{
-            tabBarStyle: {
-              backgroundColor: "black",
-              borderTopColor: "rgba(255, 255, 255, 0.3)",
-            },
-            headerStyle: {
-              shadowColor: "rgba(255, 255, 255, 0.3)",
-              backgroundColor: "black",
-            },
-            headerTintColor: "white",
-            tabBarActiveTintColor: "white",
-            headerShown: true,
-            tabBarShowLabel: false,
-          }}
-        >
-          <Tabs.Screen
-            name="Home"
-            component={Home}
-            options={{
-              tabBarIcon: ({ focused, color, size }) => (
-                <TabIcon iconName={"home"} color={color} focused={focused} />
-              ),
-            }}
+        <Stack.Navigator mode="modal">
+          <Stack.Screen
+            name="Tabs"
+            options={{ headerShown: false }}
+            component={TabsNav}
           />
-          <Tabs.Screen
-            name="Search"
-            component={Search}
+          <Stack.Screen
+            name="CreateShop"
             options={{
-              tabBarIcon: ({ focused, color, size }) => (
-                <TabIcon iconName={"search"} color={color} focused={focused} />
+              headerBackTitleVisible: false,
+              headerBackImage: ({ tintColor }) => (
+                <Ionicons color={tintColor} name="close" size={28} />
               ),
+              title: "Upload",
+              headerTintColor: "white",
+              headerStyle: {
+                backgroundColor: "black",
+              },
             }}
+            component={CreateShop}
           />
-
-          <Tabs.Screen
-            name="Profile"
-            component={isLoggedIn ? Profile : LogIn}
-            options={{
-              tabBarIcon: ({ focused, color, size }) => (
-                <TabIcon iconName={"person"} color={color} focused={focused} />
-              ),
-            }}
-          />
-        </Tabs.Navigator>
+        </Stack.Navigator>
       </NavigationContainer>
     </ApolloProvider>
   );

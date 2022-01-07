@@ -5,6 +5,7 @@ import {
   makeVar,
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
+import { onError } from "@apollo/client/link/error";
 import { offsetLimitPagination } from "@apollo/client/utilities";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -45,23 +46,27 @@ const authLink = setContext((_, { headers }) => {
   };
 });
 
+const onErrorLink = onError(({ graphQLErrors, networkError }) => {
+  if (graphQLErrors) {
+    console.log(`GraphQL Error`, graphQLErrors);
+  }
+  if (networkError) {
+    console.log("Network Error", networkError);
+  }
+});
+
 export const cache = new InMemoryCache({
   typePolicies: {
     Query: {
       fields: {
-        seeCoffeeShops: {
-          keyArgs: false,
-          merge(existing = [], incoming = []) {
-            return [...existing, ...incoming];
-          },
-        },
+        seeCoffeeShops: offsetLimitPagination(),
       },
     },
   },
 });
 
 const client = new ApolloClient({
-  link: authLink.concat(httpLink),
+  link: authLink.concat(onErrorLink).concat(httpLink),
   cache,
 });
 

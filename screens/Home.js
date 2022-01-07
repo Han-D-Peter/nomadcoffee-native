@@ -1,9 +1,12 @@
 import { gql, useQuery, useReactiveVar } from "@apollo/client";
+import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, FlatList } from "react-native";
+import styled from "styled-components/native";
 import { myNameVar, tokenVar } from "../apollo";
 import CoffeeShop from "../components/CoffeeShop";
 import ScreenLayout from "../components/ScreenLayout";
+import ActionButton from "react-native-action-button";
 
 const FEED_QUERY = gql`
   query seeCoffeeShops($page: Int!) {
@@ -55,6 +58,12 @@ export default function Home({ navigation }) {
         data={data?.seeCoffeeShops}
         keyExtractor={shop => "" + shop.id}
         renderItem={renderShop}
+      />
+
+      <ActionButton
+        buttonColor="white"
+        onPress={() => navigation.navigate("CreateShop")}
+        icon={<Ionicons name={"md-add"} color="black" size={20} />}
       />
     </ScreenLayout>
   );
