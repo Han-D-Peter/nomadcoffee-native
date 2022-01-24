@@ -59,7 +59,6 @@ export default function Home({ navigation }) {
         keyExtractor={shop => "" + shop.id}
         renderItem={renderShop}
       />
-
       <ActionButton
         buttonColor="white"
         onPress={() => navigation.navigate("CreateShop")}
